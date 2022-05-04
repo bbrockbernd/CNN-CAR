@@ -2,7 +2,7 @@ import keras_tuner
 import numpy as np
 import pandas as pd
 import cv2
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from tensorflow import keras
 import tensorflow.keras.layers as layers
 import keras_tuner as kt

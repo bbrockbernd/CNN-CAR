@@ -4,7 +4,7 @@ from scipy.io import loadmat
 import numpy as np
 import os
 import cv2
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
 class DataSet(Enum):
