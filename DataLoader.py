@@ -100,8 +100,8 @@ class DataLoader:
 
 
 
-trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(per_frame_norm=True)
-trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
-
-plt.imshow(trainX2D[0])
-plt.show()
+# trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(per_frame_norm=True)
+# trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
+#
+# plt.imshow(trainX2D[0])
+# plt.show()
