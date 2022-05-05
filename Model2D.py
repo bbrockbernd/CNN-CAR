@@ -62,7 +62,7 @@ def create_moddel():
     # TODO leaky relu
     model = keras.Sequential()
 
-    model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
+    model.add(layers.Conv2D(16, (5, 5), input_shape=(200, 200, 1), activation='relu', padding='same'))
     # model.add(layers.BatchNormalization())
     # model.add(layers.ReLU())
     # model.add(layers.Dropout(0.2))
@@ -103,8 +103,8 @@ def run_this_mofo():
     trainX, trainy, testX, testy = loader.load_1D(per_frame_norm=True)
     # trainX, trainy, testX, testy = load_desktop_data_1D()
 
-    trainX = loader.transform_to_2d(trainX, 500)
-    testX = loader.transform_to_2d(testX, 500)
+    trainX = loader.transform_to_2d(trainX, 200)
+    testX = loader.transform_to_2d(testX, 200)
 
     start = time()
 
