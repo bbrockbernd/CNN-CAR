@@ -1,16 +1,17 @@
 name: rpconda
 channels:
   - defaults
-  - conda-forge
 dependencies:
   - jupyter
   - pandas
   - python=3.8.12
   - tensorflow-gpu
-  - keras-tuner
   - pyqt
   - matplotlib
   - opencv
   - numpy
   - scipy
   - pandas
+  - pip
+  - pip:
+    - keras-tuner
