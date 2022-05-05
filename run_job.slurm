@@ -12,4 +12,7 @@ module load 2022r1
 module load gpu
 module load cuda/11.1.1-zo3qpgx
 
+
+
+
 srun python3 ./Model2D.py
