@@ -1,6 +1,6 @@
 #!/bin/sh
 
-module load gpu 2022r1
+module load 2022r1
 module load gpu
 module load git/2.31.1-xempvss
 module load python/3.8.12-bohr45d
