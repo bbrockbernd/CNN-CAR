@@ -1,6 +1,7 @@
 name: rpconda
 channels:
   - defaults
+  - conda-forge
 dependencies:
   - jupyter
   - pandas
