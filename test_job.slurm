@@ -15,4 +15,4 @@ module load python/3.8.12-bohr45d
 module load openmpi
 module load py-tensorflow
 
-srun python howmanygpus.py
+srun python test_gpu.py
