@@ -8,9 +8,9 @@
 #SBATCH --gpus-per-task=1
 #SBATCH --mem-per-cpu=32G
 
-module load 2022r1
-module load gpu
-module load cuda/11.1.1-zo3qpgx
+#module load 2022r1
+#module load gpu
+#module load cuda/11.3
 
 
 
