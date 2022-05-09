@@ -155,19 +155,19 @@ class HyperModel2D(kt.HyperModel):
         # model.add(layers.BatchNormalization())
         # model.add(layers.ReLU())
         model.add(layers.Dropout(drop_out_rate_1))
-        model.add(layers.MaxPool2D((pool_size_1, pool_size_1)))
+        model.add(layers.MaxPool2D((pool_size_1, pool_size_1), padding='same'))
 
         model.add(layers.Conv2D(n_filters_2, (kernel_size_2, kernel_size_2), activation='relu', padding='same'))
         # model.add(layers.BatchNormalization())
         # model.add(layers.ReLU())
         model.add(layers.Dropout(drop_out_rate_2))
-        model.add(layers.MaxPool2D((pool_size_2, pool_size_2)))
+        model.add(layers.MaxPool2D((pool_size_2, pool_size_2), padding='same'))
 
         model.add(layers.Conv2D(n_filters_3, (kernel_size_3, kernel_size_3), activation='relu', padding='same'))
         # model.add(layers.BatchNormalization())
         # model.add(layers.ReLU())
         model.add(layers.Dropout(drop_out_rate_3))
-        model.add(layers.MaxPool2D((pool_size_3, pool_size_3)))
+        model.add(layers.MaxPool2D((pool_size_3, pool_size_3), padding='same'))
 
         model.add(layers.Flatten())
         model.add(layers.Dense(dense_size_1, activation='relu'))
