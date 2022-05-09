@@ -1,18 +1,21 @@
-#!/bin/sh
+#!/bin/bash -l
 #
-#SBATCH --job-name="test_job"
+#SBATCH --job-name="tensorflow"
+#SBATCH --time=01:00:00
 #SBATCH --partition=gpu
-#SBATCH --time=00:05:00
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --gpus-per-task=1
-#SBATCH --mem-per-cpu=32G
-
-#module load 2022r1
-#module load gpu
-#module load cuda/11.3
+#SBATCH --cpus-per-task=24
+#SBATCH --mem-per-cpu=1G
+#SBATCH --gres=gpu:1
 
 
+module load 2022r1
+module load gpu
+module load python/3.8.12-bohr45d
+module load openmpi
+module load py-tensorflow
 
 
-srun python3 ./Model2D.py
+
+
+srun python Model2D.py
