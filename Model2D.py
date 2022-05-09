@@ -138,10 +138,10 @@ class HyperModel2D(kt.HyperModel):
         kernel_size_2 = hp.Int('kernel size convlayer 2', 3, 15, 2)
         kernel_size_3 = hp.Int('kernel size convlayer 3', 3, 15, 2)
 
-        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 1.0, 0.1)
-        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 1.0, 0.1)
-        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 1.0, 0.1)
-        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 1.0, 0.1)
+        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 0.9, 0.1)
+        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 0.9, 0.1)
+        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 0.9, 0.1)
+        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 0.9, 0.1)
 
         pool_size_1 = hp.Choice('pool size 1', [2, 4, 8])
         pool_size_2 = hp.Choice('pool size 2', [2, 4, 8])
