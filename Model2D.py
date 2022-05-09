@@ -174,23 +174,22 @@ class HyperModel2D(kt.HyperModel):
         # model.add(layers.BatchNormalization())
         # model.add(layers.ReLU())
         model.add(layers.Dropout(drop_out_rate_4))
-        model.add(layers.Dense(6, activation='softmax'))
+        model.add(layers.Dense(8, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         return model
 
     def fit(self, hp, model, *args, **kwargs):
-        framelength = hp.Int('frame length', 32, 512, 32, default=256)
+        framelength = hp.Int('frame length', 32, 512, 32, default=448)
         resolution = hp.get('resolution')
 
 
-        trainX, trainy, testX, testy = load_desktop_data_1D(framelength=framelength)
-        trainX = transform_to_2d(trainX, resolution)
-        testX = transform_to_2d(testX, resolution)
+        trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(framelength=framelength)
+        trainX = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, resolution)
+        testX = DataLoader(DataSet.SEDENTARY).transform_to_2d(testX, resolution)
 
         verbose, epochs, batch_size = 0, 10, 32
         return model.fit(trainX, trainy, *args, batch_size=batch_size, validation_data=(testX, testy), **kwargs)
-
 
 
 def optimize():
