@@ -128,7 +128,7 @@ def run_this_mofo():
 class HyperModel2D(kt.HyperModel):
 
     def build(self, hp):
-        resolution = hp.Int('resolution', 100, 800, 100)
+        resolution = hp.Int('resolution', 100, 600, 100)
 
         n_filters_1 = hp.Int('filter count convlayer 1', 8, 128, 8)
         n_filters_2 = hp.Int('filter count convlayer 2', 8, 128, 8)
@@ -195,23 +195,23 @@ class HyperModel2D(kt.HyperModel):
 
 def optimize():
 
-    tuner = kt.RandomSearch(
-        HyperModel2D(),
-        objective="val_accuracy",
-        max_trials=3,
-        overwrite=True,
-        directory="my_dir",
-        project_name="tune_hypermodel",
-    )
-    tuner.search(epochs=5)
-
-    # tuner = kt.Hyperband(HyperModel2D(),
-    #                      objective='val_accuracy',
-    #                      max_epochs=10,
-    #                      factor=3,
-    #                      directory='tuning',
-    #                      project_name='tune_hypermodel')
+    # tuner = kt.RandomSearch(
+    #     HyperModel2D(),
+    #     objective="val_accuracy",
+    #     max_trials=3,
+    #     overwrite=True,
+    #     directory="my_dir",
+    #     project_name="tune_hypermodel",
+    # )
     # tuner.search(epochs=5)
+
+    tuner = kt.Hyperband(HyperModel2D(),
+                         objective='val_accuracy',
+                         max_epochs=15,
+                         factor=3,
+                         directory='tuning',
+                         project_name='tune_hypermodel')
+    tuner.search()
 
     # tuner = kt.BayesianOptimization(HyperModel2D(),
     #                         objective="val_accuracy",
@@ -221,5 +221,5 @@ def optimize():
     #                         project_name="tune_hypermodel")
     # tuner.search(epochs=5)
 
-# optimize()
-run_this_mofo()
+optimize()
+# run_this_mofo()
