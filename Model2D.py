@@ -4,6 +4,7 @@ import pandas as pd
 import cv2
 # from matplotlib import pyplot as plt
 from tensorflow import keras
+import tensorflow as tf
 import tensorflow.keras.layers as layers
 import keras_tuner as kt
 from time import time
@@ -58,44 +59,42 @@ def transform_to_2d(data, resolution = 500):
     data2dbw[data2d[:, :, :, 0] == 255] = 1
     return data2dbw[:, :, :, np.newaxis]
 
-def create_moddel():
+def create_moddel(strategy):
     # TODO leaky relu
-    model = keras.Sequential()
 
-    model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
-    # model.add(layers.BatchNormalization())
-    # model.add(layers.ReLU())
-    # model.add(layers.Dropout(0.2))
-    model.add(layers.MaxPool2D((4, 4)))
+    with strategy.scope():
+        model = keras.Sequential()
 
-    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same'))
-    # model.add(layers.BatchNormalization())
-    # model.add(layers.ReLU())
-    model.add(layers.Dropout(0.2))
-    model.add(layers.MaxPool2D((4, 4)))
+        model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
+        # model.add(layers.BatchNormalization())
+        # model.add(layers.ReLU())
+        # model.add(layers.Dropout(0.2))
+        model.add(layers.MaxPool2D((4, 4)))
 
-    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
-    # model.add(layers.BatchNormalization())
-    # model.add(layers.ReLU())
-    model.add(layers.Dropout(0.2))
-    model.add(layers.MaxPool2D((4, 4)))
+        model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same'))
+        # model.add(layers.BatchNormalization())
+        # model.add(layers.ReLU())
+        model.add(layers.Dropout(0.2))
+        model.add(layers.MaxPool2D((4, 4)))
 
-    model.add(layers.Flatten())
-    model.add(layers.Dense(100, activation='relu'))
-    # model.add(layers.BatchNormalization())
-    # model.add(layers.ReLU())
-    model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(8, activation='softmax'))
+        model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+        # model.add(layers.BatchNormalization())
+        # model.add(layers.ReLU())
+        model.add(layers.Dropout(0.2))
+        model.add(layers.MaxPool2D((4, 4)))
+
+        model.add(layers.Flatten())
+        model.add(layers.Dense(100, activation='relu'))
+        # model.add(layers.BatchNormalization())
+        # model.add(layers.ReLU())
+        model.add(layers.Dropout(0.5))
+        model.add(layers.Dense(8, activation='softmax'))
 
 
-    optimizer = keras.optimizers.Adam(learning_rate=0.001)
-    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+        optimizer = keras.optimizers.Adam(learning_rate=0.001)
+        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+
     return model
-
-def train(hp):
-    trainX, trainy, testX, testy = load_desktop_data_1D(hp)
-    trainX = transform_to_2d(trainX)
-    testX = transform_to_2d(testX)
 
 
 def run_this_mofo():
@@ -108,10 +107,17 @@ def run_this_mofo():
 
     start = time()
 
-    model = create_moddel()
+    strategy = tf.distribute.MirroredStrategy()
+    print(f'Number of devices: {strategy.num_replicas_in_sync}')
+
+    train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=128)
+    test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=128)
+
+
+    model = create_moddel(strategy)
     verbose, epochs, batch_size = 1, 10, 32
-    model.fit(trainX, trainy, epochs=epochs, batch_size=batch_size, verbose=verbose)
-    _, accuracy = model.evaluate(testX, testy, batch_size=batch_size, verbose=verbose)
+    model.fit(train_data, epochs=epochs, verbose=verbose)
+    _, accuracy = model.evaluate(test_data, verbose=verbose)
     print(accuracy)
 
     end = time()
@@ -221,5 +227,5 @@ def optimize():
                             project_name="tune_hypermodel")
     tuner.search(epochs=10)
 
-optimize()
-# run_this_mofo()
+# optimize()
+run_this_mofo()
