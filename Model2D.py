@@ -189,7 +189,7 @@ class HyperModel2D(kt.HyperModel):
         trainX = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, resolution, thickness=thickness)
         testX = DataLoader(DataSet.SEDENTARY).transform_to_2d(testX, resolution, thickness=thickness)
 
-        verbose, epochs, batch_size = 0, 10, 64
+        verbose, epochs, batch_size = 0, 10, 32
         return model.fit(trainX, trainy, *args, batch_size=batch_size, validation_data=(testX, testy), **kwargs)
 
 
