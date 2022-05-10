@@ -135,6 +135,7 @@ class HyperModel2D(kt.HyperModel):
 
     def __int__(self, strategy):
         self.strategy = strategy
+        super().strategy = strategy
 
     def build(self, hp):
         resolution = hp.Int('resolution', 100, 600, 100)
