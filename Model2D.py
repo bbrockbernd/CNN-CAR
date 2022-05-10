@@ -138,10 +138,10 @@ class HyperModel2D(kt.HyperModel):
         kernel_size_2 = hp.Int('kernel size convlayer 2', 3, 15, 2)
         kernel_size_3 = hp.Int('kernel size convlayer 3', 3, 15, 2)
 
-        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 0.9, 0.1)
-        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 0.9, 0.1)
-        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 0.9, 0.1)
-        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 0.9, 0.1)
+        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 0.6, 0.1)
+        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 0.6, 0.1)
+        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 0.6, 0.1)
+        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 0.6, 0.1)
 
         pool_size_1 = hp.Choice('pool size 1', [2, 4, 8])
         pool_size_2 = hp.Choice('pool size 2', [2, 4, 8])
@@ -182,13 +182,14 @@ class HyperModel2D(kt.HyperModel):
     def fit(self, hp, model, *args, **kwargs):
         framelength = hp.Int('frame length', 32, 512, 32, default=448)
         resolution = hp.get('resolution')
+        thickness = hp.Int('thickness', 1, 4, 1)
 
 
         trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(framelength=framelength)
-        trainX = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, resolution)
-        testX = DataLoader(DataSet.SEDENTARY).transform_to_2d(testX, resolution)
+        trainX = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, resolution, thickness=thickness)
+        testX = DataLoader(DataSet.SEDENTARY).transform_to_2d(testX, resolution, thickness=thickness)
 
-        verbose, epochs, batch_size = 0, 10, 32
+        verbose, epochs, batch_size = 0, 10, 64
         return model.fit(trainX, trainy, *args, batch_size=batch_size, validation_data=(testX, testy), **kwargs)
 
 
@@ -204,21 +205,21 @@ def optimize():
     # )
     # tuner.search(epochs=5)
 
-    tuner = kt.Hyperband(HyperModel2D(),
-                         objective='val_accuracy',
-                         max_epochs=15,
-                         factor=3,
-                         directory='tuning',
-                         project_name='tune_hypermodel')
-    tuner.search()
+    # tuner = kt.Hyperband(HyperModel2D(),
+    #                      objective='val_accuracy',
+    #                      max_epochs=15,
+    #                      factor=3,
+    #                      directory='tuning',
+    #                      project_name='tune_hypermodel')
+    # tuner.search()
 
-    # tuner = kt.BayesianOptimization(HyperModel2D(),
-    #                         objective="val_accuracy",
-    #                         max_trials=3,
-    #                         overwrite=True,
-    #                         directory="tuning",
-    #                         project_name="tune_hypermodel")
-    # tuner.search(epochs=5)
+    tuner = kt.BayesianOptimization(HyperModel2D(),
+                            objective="val_accuracy",
+                            max_trials=200,
+                            overwrite=False,
+                            directory="tuning_bayes",
+                            project_name="tune_hypermodel")
+    tuner.search(epochs=10)
 
 optimize()
 # run_this_mofo()

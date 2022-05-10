@@ -86,13 +86,13 @@ class DataLoader:
 
         return x, y
 
-    def transform_to_2d(self, data, resolution = 500):
+    def transform_to_2d(self, data, resolution=500, thickness=1):
         data2d = np.zeros((data.shape[0], resolution, resolution, 3), dtype=np.uint8)
         for i in range(data.shape[0]):
             current = data[i]
             current = np.floor(current * resolution).astype(int)
             current[current == resolution] = resolution - 1
-            cv2.polylines(data2d[i], np.int32([current]), False, color=(255, 255, 255), thickness=1)
+            cv2.polylines(data2d[i], np.int32([current]), False, color=(255, 255, 255), thickness=thickness)
 
         data2dbw = np.zeros((data2d.shape[0], data2d.shape[1], data2d.shape[2]))
         data2dbw[data2d[:, :, :, 0] == 255] = 1
