@@ -236,7 +236,7 @@ def optimize():
                             objective="val_accuracy",
                             max_trials=200,
                             overwrite=False,
-                            directory="tuning_bayes_dist",
+                            directory="tuning_bayes",
                             project_name="tune_hypermodel")
     tuner.search(epochs=10)
 
