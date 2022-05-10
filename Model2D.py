@@ -62,37 +62,37 @@ def transform_to_2d(data, resolution = 500):
 def create_moddel(strategy):
     # TODO leaky relu
 
-    with strategy.scope():
-        model = keras.Sequential()
 
-        model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        # model.add(layers.Dropout(0.2))
-        model.add(layers.MaxPool2D((4, 4)))
+    model = keras.Sequential()
 
-        model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(0.2))
-        model.add(layers.MaxPool2D((4, 4)))
+    model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
+    # model.add(layers.BatchNormalization())
+    # model.add(layers.ReLU())
+    # model.add(layers.Dropout(0.2))
+    model.add(layers.MaxPool2D((4, 4)))
 
-        model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(0.2))
-        model.add(layers.MaxPool2D((4, 4)))
+    model.add(layers.Conv2D(32, (5, 5), activation='relu', padding='same'))
+    # model.add(layers.BatchNormalization())
+    # model.add(layers.ReLU())
+    model.add(layers.Dropout(0.2))
+    model.add(layers.MaxPool2D((4, 4)))
 
-        model.add(layers.Flatten())
-        model.add(layers.Dense(100, activation='relu'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(8, activation='softmax'))
+    model.add(layers.Conv2D(64, (5, 5), activation='relu', padding='same'))
+    # model.add(layers.BatchNormalization())
+    # model.add(layers.ReLU())
+    model.add(layers.Dropout(0.2))
+    model.add(layers.MaxPool2D((4, 4)))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(100, activation='relu'))
+    # model.add(layers.BatchNormalization())
+    # model.add(layers.ReLU())
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(8, activation='softmax'))
 
 
-        optimizer = keras.optimizers.Adam(learning_rate=0.001)
-        model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+    optimizer = keras.optimizers.Adam(learning_rate=0.001)
+    model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
 
     return model
 
@@ -107,14 +107,14 @@ def run_this_mofo():
 
     start = time()
 
-    strategy = tf.distribute.MirroredStrategy()
-    print(f'Number of devices: {strategy.num_replicas_in_sync}')
+    # strategy = tf.distribute.MirroredStrategy()
+    # print(f'Number of devices: {strategy.num_replicas_in_sync}')
 
-    train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=128)
-    test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=128)
+    train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=32)
+    test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=32)
 
 
-    model = create_moddel(strategy)
+    model = create_moddel()
     verbose, epochs, batch_size = 1, 10, 32
     model.fit(train_data, epochs=epochs, verbose=verbose)
     _, accuracy = model.evaluate(test_data, verbose=verbose)
