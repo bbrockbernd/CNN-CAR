@@ -133,7 +133,7 @@ def run_this_mofo():
 
 class HyperModel2D(kt.HyperModel):
 
-    def __int__(self, strategy = None):
+    def __int__(self, strategy):
         self.strategy = strategy
 
     def build(self, hp):
