@@ -4,9 +4,9 @@
 #SBATCH --time=05:00:00
 #SBATCH --partition=gpu
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=2
+#SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=64G
-#SBATCH --gres=gpu:4
+#SBATCH --gpus-per-task=1
 
 
 module load 2022r1
@@ -18,4 +18,8 @@ module load py-tensorflow
 
 
 
-srun ./dist_tuning.sh
+srun ./chief.sh > chief.txt &
+srun ./tuner.sh tuner0 > tuner.txt &
+srun ./tuner.sh tuner1 > tuner.txt &
+srun ./tuner.sh tuner2 > tuner.txt &
+
