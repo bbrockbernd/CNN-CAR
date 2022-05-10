@@ -155,37 +155,37 @@ class HyperModel2D(kt.HyperModel):
 
         dense_size_1 = hp.Int('dense size 2', 20, 140, 20)
 
-        # with tf.distribute.MirroredStrategy().scope():
+        with tf.distribute.MirroredStrategy().scope():
 
-        model = keras.Sequential()
+            model = keras.Sequential()
 
-        model.add(layers.Conv2D(n_filters_1, (kernel_size_1, kernel_size_1), input_shape=(resolution, resolution, 1), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(drop_out_rate_1))
-        model.add(layers.MaxPool2D((pool_size_1, pool_size_1), padding='same'))
+            model.add(layers.Conv2D(n_filters_1, (kernel_size_1, kernel_size_1), input_shape=(resolution, resolution, 1), activation='relu', padding='same'))
+            # model.add(layers.BatchNormalization())
+            # model.add(layers.ReLU())
+            model.add(layers.Dropout(drop_out_rate_1))
+            model.add(layers.MaxPool2D((pool_size_1, pool_size_1), padding='same'))
 
-        model.add(layers.Conv2D(n_filters_2, (kernel_size_2, kernel_size_2), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(drop_out_rate_2))
-        model.add(layers.MaxPool2D((pool_size_2, pool_size_2), padding='same'))
+            model.add(layers.Conv2D(n_filters_2, (kernel_size_2, kernel_size_2), activation='relu', padding='same'))
+            # model.add(layers.BatchNormalization())
+            # model.add(layers.ReLU())
+            model.add(layers.Dropout(drop_out_rate_2))
+            model.add(layers.MaxPool2D((pool_size_2, pool_size_2), padding='same'))
 
-        model.add(layers.Conv2D(n_filters_3, (kernel_size_3, kernel_size_3), activation='relu', padding='same'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(drop_out_rate_3))
-        model.add(layers.MaxPool2D((pool_size_3, pool_size_3), padding='same'))
+            model.add(layers.Conv2D(n_filters_3, (kernel_size_3, kernel_size_3), activation='relu', padding='same'))
+            # model.add(layers.BatchNormalization())
+            # model.add(layers.ReLU())
+            model.add(layers.Dropout(drop_out_rate_3))
+            model.add(layers.MaxPool2D((pool_size_3, pool_size_3), padding='same'))
 
-        model.add(layers.Flatten())
-        model.add(layers.Dense(dense_size_1, activation='relu'))
-        # model.add(layers.BatchNormalization())
-        # model.add(layers.ReLU())
-        model.add(layers.Dropout(drop_out_rate_4))
-        model.add(layers.Dense(8, activation='softmax'))
+            model.add(layers.Flatten())
+            model.add(layers.Dense(dense_size_1, activation='relu'))
+            # model.add(layers.BatchNormalization())
+            # model.add(layers.ReLU())
+            model.add(layers.Dropout(drop_out_rate_4))
+            model.add(layers.Dense(8, activation='softmax'))
 
 
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         return model
 
     def fit(self, hp, model, *args, **kwargs):
@@ -200,8 +200,8 @@ class HyperModel2D(kt.HyperModel):
 
         verbose, epochs, batch_size = 0, 10, 32
 
-        train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=32)
-        test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=32)
+        train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=128)
+        test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=128)
 
         return model.fit(train_data, *args, validation_data=test_data, **kwargs)
 
