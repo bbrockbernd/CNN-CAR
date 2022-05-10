@@ -1,12 +1,12 @@
 #!/bin/bash -l
 #
-#SBATCH --job-name="tensorflow"
+#SBATCH --job-name="dist_training"
 #SBATCH --time=05:00:00
 #SBATCH --partition=gpu
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=64G
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:4
 
 
 module load 2022r1
