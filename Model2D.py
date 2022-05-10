@@ -223,9 +223,9 @@ def optimize():
                             objective="val_accuracy",
                             max_trials=200,
                             overwrite=False,
-                            directory="tuning_bayes",
+                            directory="tuning_bayes_dist",
                             project_name="tune_hypermodel")
     tuner.search(epochs=10)
 
-# optimize()
-run_this_mofo()
+optimize()
+# run_this_mofo()
