@@ -133,10 +133,6 @@ def run_this_mofo():
 
 class HyperModel2D(kt.HyperModel):
 
-    def __int__(self, strategy):
-        self.strategy = strategy
-        super().strategy = strategy
-
     def build(self, hp):
         resolution = hp.Int('resolution', 100, 600, 100)
 
@@ -159,7 +155,7 @@ class HyperModel2D(kt.HyperModel):
 
         dense_size_1 = hp.Int('dense size 2', 20, 140, 20)
 
-        with self.strategy.scope():
+        with tf.distribute.MirroredStrategy().scope():
 
             model = keras.Sequential()
 
@@ -230,10 +226,18 @@ def optimize():
     #                      project_name='tune_hypermodel')
     # tuner.search()
 
-    strategy = tf.distribute.MirroredStrategy()
+    # tuner = kt.RandomSearch(
+    #     HyperModel2D(),
+    #     objective="val_accuracy",
+    #     max_trials=3,
+    #     overwrite=True,
+    #     directory="my_dir",
+    #     project_name="tune_hypermodel",
+    # )
+    # tuner.search(epochs=5)
 
 
-    tuner = kt.BayesianOptimization(HyperModel2D(strategy),
+    tuner = kt.BayesianOptimization(HyperModel2D(),
                             objective="val_accuracy",
                             max_trials=200,
                             overwrite=False,
