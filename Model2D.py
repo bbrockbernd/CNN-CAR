@@ -59,7 +59,7 @@ def transform_to_2d(data, resolution = 500):
     data2dbw[data2d[:, :, :, 0] == 255] = 1
     return data2dbw[:, :, :, np.newaxis]
 
-def create_moddel(strategy):
+def create_moddel(strategy = None):
     # TODO leaky relu
 
 
