@@ -3,10 +3,10 @@
 #SBATCH --job-name="dist_training"
 #SBATCH --time=05:00:00
 #SBATCH --partition=gpu
-#SBATCH --ntasks=5
-#SBATCH --cpus-per-task=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=5
 #SBATCH --mem-per-cpu=64G
-#SBATCH --gpus-per-task=1
+#SBATCH --gres=gpu:4
 
 
 module load 2022r1
