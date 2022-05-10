@@ -203,7 +203,7 @@ class HyperModel2D(kt.HyperModel):
         train_data = tf.data.Dataset.from_tensor_slices((trainX, trainy)).batch(batch_size=128)
         test_data = tf.data.Dataset.from_tensor_slices((testX, testy)).batch(batch_size=128)
 
-        return model.fit(train_data, trainy, *args, validation_data=test_data, **kwargs)
+        return model.fit(train_data, *args, validation_data=test_data, **kwargs)
 
 
 def optimize():
