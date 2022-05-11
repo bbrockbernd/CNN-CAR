@@ -47,8 +47,10 @@ class CustomOptimizer(kt.BayesianOptimization):
                 else:
                     self.oracle.update_trial(
                         trial.trial_id,
+                        # Convert to dictionary before calling `update_trial()`
+                        # to pass it from gRPC.
                         tuner_utils.convert_to_metrics_dict(
-                            results, self.oracle.objective
+                            results, self.oracle.objective, "Tuner.run_trial()"
                         ),
                     )
             except Exception as e:
@@ -62,7 +64,7 @@ class CustomOptimizer(kt.BayesianOptimization):
                 self.oracle.update_trial(
                     trial.trial_id,
                     tuner_utils.convert_to_metrics_dict(
-                        fake_results, self.oracle.objective
+                        fake_results, self.oracle.objective, "Tuner.run_trial()"
                     ),
                 )
             self.on_trial_end(trial)

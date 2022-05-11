@@ -18,8 +18,8 @@ class HyperModel1D(kt.HyperModel):
         pool_1 = hp.Choice('max pool 1', [2, 4, 8, 16])
         dense_size = hp.Int('Dense size', 60, 200, 20)
 
-        drop_1 = hp.Float('drop out 1', 0.0, 0.8, 0.2)
-        drop_2 = hp.Float('drop out 2', 0.0, 0.8, 0.2)
+        drop_1 = hp.Float('drop out 1', 0.6, 1.0, 0.2)
+        drop_2 = hp.Float('drop out 2', 0.6, 1.0, 0.2)
 
         model.add(layers.Conv1D(filters=n_filters, kernel_size=kernel_size, activation='relu', input_shape=(frame_length, 2), padding='same'))
         model.add(layers.Dropout(drop_1))
