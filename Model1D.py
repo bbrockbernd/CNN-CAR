@@ -1,6 +1,8 @@
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
+
+from CustomOptimizer import CustomOptimizer
 from DataLoader import DataLoader, DataSet
 import keras_tuner as kt
 
@@ -64,24 +66,24 @@ def evaluate_model(trainX, trainy, testX, testy):
     return accuracy
 
 def tune_params():
-    tuner = kt.Hyperband(HyperModel1D(),
-                         objective='val_accuracy',
-                         max_epochs=30,
-                         factor=3,
-                         directory='tuning1d',
-                         project_name='tune_hypermodel',
-                         hyperband_iterations=2,
-                         overwrite=True)
-    tuner.search()
+    # tuner = kt.Hyperband(HyperModel1D(),
+    #                      objective='val_accuracy',
+    #                      max_epochs=30,
+    #                      factor=3,
+    #                      directory='tuning1d',
+    #                      project_name='tune_hypermodel',
+    #                      hyperband_iterations=2,
+    #                      overwrite=True)
+    # tuner.search()
 
 
-    # tuner = kt.BayesianOptimization(HyperModel1D(),
-    #                         objective="val_accuracy",
-    #                         max_trials=3,
-    #                         overwrite=False,
-    #                         directory="tuning1d",
-    #                         project_name="tune_hypermodel")
-    # tuner.search(epochs=10)
+    tuner = CustomOptimizer(HyperModel1D(),
+                            objective="val_accuracy",
+                            max_trials=100,
+                            overwrite=True,
+                            directory="tuning_tester",
+                            project_name="tune_hypermodel")
+    tuner.search(epochs=1)
 
 
 # loader = DataLoader(DataSet.SEDENTARY)

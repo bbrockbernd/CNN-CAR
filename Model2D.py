@@ -9,6 +9,7 @@ import tensorflow.keras.layers as layers
 import keras_tuner as kt
 from time import time
 
+from CustomOptimizer import CustomOptimizer
 from DataLoader import DataLoader, DataSet
 
 
@@ -237,7 +238,7 @@ def optimize():
     # tuner.search(epochs=5)
 
 
-    tuner = kt.BayesianOptimization(HyperModel2D(),
+    tuner = CustomOptimizer(HyperModel2D(),
                             objective="val_accuracy",
                             max_trials=200,
                             overwrite=False,
