@@ -86,8 +86,8 @@ def tune_params():
     tuner.search(epochs=1)
 
 
-# loader = DataLoader(DataSet.SEDENTARY)
-# trainX, trainy, testX, testy = loader.load_1D()
-# evaluate_model(trainX, trainy, testX, testy)
+loader = DataLoader(DataSet.SEDENTARY)
+trainX, trainy, testX, testy = loader.load_1D()
+evaluate_model(trainX, trainy, testX, testy)
 
-tune_params()
+# tune_params()

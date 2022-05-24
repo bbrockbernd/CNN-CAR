@@ -66,15 +66,19 @@ class DataLoader:
         for i, key in enumerate(keys):
             activity_data = dic[key]
 
-            indices = np.array([np.arange(0, len(activity_data), framelength/2)[:-2], np.arange(framelength, len(activity_data), framelength/2)]).astype(int)
-            frames = []
-            for ind in indices.T:
-                frame = activity_data[ind[0] : ind[1], 0:2]
-                if per_frame_norm:
-                    frame = frame - np.min(frame)
-                    frame = frame / np.max(frame)
-                frames.append(frame)
-            framesX = np.array(frames)
+            framesX = np.lib.stride_tricks.sliding_window_view(activity_data[:, 0:2], (framelength,), axis=0)
+            framesX = np.swapaxes(framesX, 1, 2)
+            framesX = framesX[::3]
+
+            # indices = np.array([np.arange(0, len(activity_data), framelength/2)[:-2], np.arange(framelength, len(activity_data), framelength/2)]).astype(int)
+            # frames = []
+            # for ind in indices.T:
+            #     frame = activity_data[ind[0] : ind[1], 0:2]
+            #     if per_frame_norm:
+            #         frame = frame - np.min(frame)
+            #         frame = frame / np.max(frame)
+            #     frames.append(frame)
+            # framesX = np.array(frames)
 
             # Making y
             classy = np.zeros(len(keys))
