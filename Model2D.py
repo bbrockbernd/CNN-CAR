@@ -244,7 +244,13 @@ def optimize():
                             overwrite=False,
                             directory="tuning_bayes",
                             project_name="tune_hypermodel")
-    tuner.search(epochs=10)
+
+    callback = keras.callbacks.EarlyStopping(monitor='val_loss',
+                                             min_delta=1e-4,
+                                             patience=2,
+                                             verbose=0, mode='auto')
+
+    tuner.search(epochs=30, callbacks=[callback])
 
 optimize()
 # run_this_mofo()
