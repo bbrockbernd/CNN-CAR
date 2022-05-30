@@ -4,7 +4,7 @@ from scipy.io import loadmat
 import numpy as np
 import os
 import cv2
-# from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt
 
 
 class DataSet(Enum):
@@ -17,7 +17,7 @@ class DataLoader:
     def __init__(self, ds: DataSet):
         self.dataPath: str = ['DesktopActivity', 'ReadingActivity', 'SedentaryActivity/data/subject'][ds.value]
 
-    def load_1D(self, validation = 0.1, framelength = 256, per_frame_norm = False):
+    def load_1D(self, validation = 0.1, framelength = 256):
         subject_files = np.array(os.listdir(self.dataPath))
         n_test_subjects = int(np.ceil(validation * len(subject_files)))
         test_mask = np.zeros_like(subject_files, dtype=bool)
@@ -26,7 +26,7 @@ class DataLoader:
 
         trainX, trainy = None, None
         for file in subject_files[train_mask]:
-            x, y = self.load_file(f'{self.dataPath}/{file}', framelength, per_frame_norm)
+            x, y = self.load_file(f'{self.dataPath}/{file}', framelength)
             if trainX is None:
                 trainX = x
                 trainy = y
@@ -36,7 +36,7 @@ class DataLoader:
 
         testX, testy = None, None
         for file in subject_files[test_mask]:
-            x, y = self.load_file(f'{self.dataPath}/{file}', framelength, per_frame_norm)
+            x, y = self.load_file(f'{self.dataPath}/{file}', framelength)
             if testX is None:
                 testX = x
                 testy = y
@@ -44,16 +44,15 @@ class DataLoader:
                 testX = np.concatenate((x, testX))
                 testy = np.concatenate((y, testy))
 
-        if not per_frame_norm:
-            min = np.min([np.min(trainX), np.min(testX)])
-            trainX, testX = trainX - min, testX - min
+        min = np.min([np.min(trainX), np.min(testX)])
+        trainX, testX = trainX - min, testX - min
 
-            max = np.max([np.max(trainX), np.max(testX)])
-            trainX, testX = trainX / max, testX / max
+        max = np.max([np.max(trainX), np.max(testX)])
+        trainX, testX = trainX / max, testX / max
 
         return trainX, trainy, testX, testy
 
-    def load_file(self, file_name, framelength, per_frame_norm):
+    def load_file(self, file_name, framelength):
         dic = loadmat(file_name)
         keys = []
         for key in dic.keys():
@@ -69,20 +68,7 @@ class DataLoader:
             indices = np.tile(np.arange(framelength), (len(activity_data) - framelength, 1)) + np.arange(len(activity_data) - framelength)[:, np.newaxis]
             framesX = activity_data[indices, 0:2]
 
-
-            # framesX3 = np.lib.stride_tricks.sliding_window_view(activity_data[:, 0:2], (framelength,), axis=0)
-            # framesX = np.swapaxes(framesX, 1, 2)
             framesX = framesX[::30]
-
-            # indices = np.array([np.arange(0, len(activity_data), framelength/2)[:-2], np.arange(framelength, len(activity_data), framelength/2)]).astype(int)
-            # frames = []
-            # for ind in indices.T:
-            #     frame = activity_data[ind[0] : ind[1], 0:2]
-            #     if per_frame_norm:
-            #         frame = frame - np.min(frame)
-            #         frame = frame / np.max(frame)
-            #     frames.append(frame)
-            # framesX = np.array(frames)
 
             # Making y
             classy = np.zeros(len(keys))
@@ -108,8 +94,10 @@ class DataLoader:
 
 
 
-# trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(per_frame_norm=True)
-# trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
-#
-# plt.imshow(trainX2D[0])
-# plt.show()
+trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D()
+trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
+
+for i in range(20):
+
+    plt.imshow(trainX2D[np.random.randint(0, trainX2D.shape[0])])
+    plt.show()
