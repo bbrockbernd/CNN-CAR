@@ -44,11 +44,11 @@ class DataLoader:
                 testX = np.concatenate((x, testX))
                 testy = np.concatenate((y, testy))
 
-        min = np.min([np.min(trainX), np.min(testX)])
-        trainX, testX = trainX - min, testX - min
-
-        max = np.max([np.max(trainX), np.max(testX)])
-        trainX, testX = trainX / max, testX / max
+        # min = np.min([np.min(trainX), np.min(testX)])
+        # trainX, testX = trainX - min, testX - min
+        #
+        # max = np.max([np.max(trainX), np.max(testX)])
+        # trainX, testX = trainX / max, testX / max
 
         return trainX, trainy, testX, testy
 
@@ -65,10 +65,20 @@ class DataLoader:
         for i, key in enumerate(keys):
             activity_data = dic[key]
 
+            # Remove outliers in X data[abs(data - np.mean(data)) < m * np.std(data)]
+            activity_data = activity_data[np.abs(activity_data[:, 0] - np.mean(activity_data[:, 0])) < 2 * np.std(activity_data[:, 0])]
+            activity_data = activity_data[np.abs(activity_data[:, 1] - np.mean(activity_data[:, 1])) < 2 * np.std(activity_data[:, 1])]
+
+            # Sliding window
             indices = np.tile(np.arange(framelength), (len(activity_data) - framelength, 1)) + np.arange(len(activity_data) - framelength)[:, np.newaxis]
             framesX = activity_data[indices, 0:2]
 
+            # Reduce data size
             framesX = framesX[::30]
+
+            # Normalize
+            framesX = framesX - np.min(framesX)
+            framesX = framesX / np.max(framesX)
 
             # Making y
             classy = np.zeros(len(keys))
@@ -94,10 +104,10 @@ class DataLoader:
 
 
 
-trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D()
-trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
-
-for i in range(20):
-
-    plt.imshow(trainX2D[np.random.randint(0, trainX2D.shape[0])])
-    plt.show()
+# trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D()
+# trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
+#
+# for i in range(20):
+#
+#     plt.imshow(trainX2D[np.random.randint(0, trainX2D.shape[0])])
+#     plt.show()
