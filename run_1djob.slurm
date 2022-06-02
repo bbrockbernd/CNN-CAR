@@ -18,4 +18,4 @@ module load py-tensorflow
 
 
 
-srun python Model1D2.py
+srun python Model1D2S.py
