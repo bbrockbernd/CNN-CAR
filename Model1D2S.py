@@ -110,7 +110,7 @@ def tune_params():
                             objective="val_accuracy",
                             max_trials=300,
                             overwrite=False,
-                            directory="tuning_1D2_sedentary",
+                            directory="/scratch/bbrockbernd/tuning_1D2_sedentary",
                             project_name="tune_hypermodel")
 
     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
