@@ -10,17 +10,17 @@ import keras_tuner as kt
 class HyperModel1D(kt.HyperModel):
 
     def build(self, hp):
-        frame_length = hp.Int('frame length', 32, 512, 32)
+        frame_length = hp.Int('frame length', 320, 1024, 64)
 
-        n_filters_1 = hp.Int('filter count 1', 8, 128, 8)
+        n_filters_1 = hp.Int('filter count 1', 64, 256, 8)
         kernel_size_1 = hp.Int('kernel size 1', 3, 17, 2)
-        drop_1 = hp.Float('drop out 1', 0.0, 0.8, 0.2)
+        drop_1 = hp.Float('drop out 1', 0.0, 0.5, 0.1)
         pool_1 = hp.Choice('max pool 1', [2, 4, 8, 16])
 
         second_convolution = hp.Boolean('Enable 2nd Conv')
 
-        dense_size_1 = hp.Int('Dense size 1', 60, 200, 20)
-        drop_3 = hp.Float('drop out 3', 0.0, 0.8, 0.2)
+        dense_size_1 = hp.Int('Dense size 1', 60, 300, 20)
+        drop_3 = hp.Float('drop out 3', 0.0, 0.5, 0.1)
 
         second_dense = hp.Boolean('Enable 2nd Dense')
 
@@ -34,10 +34,10 @@ class HyperModel1D(kt.HyperModel):
 
         if second_convolution:
             with hp.conditional_scope('Enable 2nd Conv', [True]):
-                n_filters_2 = hp.Int('filter count 2', 8, 128, 8)
-                kernel_size_2 = hp.Int('kernel size 2', 3, 17, 2)
-                drop_2 = hp.Float('drop out 2', 0.0, 0.8, 0.2)
-                pool_2 = hp.Choice('max pool 2', [2, 4, 8, 16])
+                n_filters_2 = hp.Int('filter count 2', 64, 256, 8)
+                kernel_size_2 = hp.Int('kernel size 2', 3, 25, 2)
+                drop_2 = hp.Float('drop out 2', 0.0, 0.5, 0.1)
+                pool_2 = hp.Choice('max pool 2', [2, 4, 8, 16, 32, 64])
 
                 model.add(layers.Conv1D(filters=n_filters_2, kernel_size=kernel_size_2, activation='relu', padding='same'))
                 model.add(layers.Dropout(drop_2))
@@ -71,20 +71,21 @@ class HyperModel1D(kt.HyperModel):
 
 
 def evaluate_model(trainX, trainy, testX, testy):
-    verbose, epochs, batch_size = 1, 20, 64
+    verbose, epochs, batch_size = 1, 13, 64
     n_timesteps, n_features, n_outputs = trainX.shape[1], trainX.shape[2], trainy.shape[1]
     model = keras.Sequential()
-    model.add(layers.Conv1D(filters=64, kernel_size=3, activation='relu', input_shape=(n_timesteps,n_features), padding='same'))
-    # model.add(layers.BatchNormalization())
-    model.add(layers.Dropout(0.2))
-    model.add(layers.MaxPooling1D(pool_size=4))
-    # model.add(Conv1D(filters=32, kernel_size=3, activation='relu'))
-    # model.add(Conv1D(filters=64, kernel_size=3, activation='relu'))
-    # model.add(Dropout(0.5))
-    # model.add(MaxPooling1D(pool_size=2))
+
+    model.add(layers.Conv1D(filters=128, kernel_size=3, activation='relu', input_shape=(n_timesteps,n_features), padding='same'))
+    model.add(layers.Dropout(0.0))
+    model.add(layers.MaxPooling1D(pool_size=2))
+
+    model.add(layers.Conv1D(filters=128, kernel_size=17, activation='relu', padding='same'))
+    model.add(layers.Dropout(0.0))
+    model.add(layers.MaxPooling1D(pool_size=16))
+
     model.add(layers.Flatten())
-    model.add(layers.Dense(100, activation='relu'))
-    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(200, activation='relu'))
+    model.add(layers.Dropout(0.0))
     model.add(layers.Dense(n_outputs, activation='softmax'))
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     # fit network
@@ -107,21 +108,21 @@ def tune_params():
 
     tuner = CustomOptimizer(HyperModel1D(),
                             objective="val_accuracy",
-                            max_trials=100,
+                            max_trials=300,
                             overwrite=False,
-                            directory="tuning_tester",
+                            directory="tuning_1D2_sedentary",
                             project_name="tune_hypermodel")
 
     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
-                                  min_delta=1e-4,
-                                  patience=2,
-                                  verbose=0, mode='auto')
+                                             min_delta=1e-4,
+                                             patience=2,
+                                             verbose=0, mode='auto')
 
     tuner.search(epochs=30, callbacks=[callback])
 
 
-# loader = DataLoader(DataSet.SEDENTARY)
-# trainX, trainy, testX, testy = loader.load_1D()
+# loader = DataLoader(DataSet.READING)
+# trainX, trainy, testX, testy = loader.load_1D(framelength=512)
 # evaluate_model(trainX, trainy, testX, testy)
 
-# tune_params()
+tune_params()
