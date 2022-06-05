@@ -55,14 +55,14 @@ class HyperModel1D(kt.HyperModel):
                 model.add(layers.Dense(dense_size_2, activation='relu'))
                 model.add(layers.Dropout(drop_4))
 
-        model.add(layers.Dense(6, activation='softmax'))
+        model.add(layers.Dense(8, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         return model
 
     def fit(self, hp, model, *args, **kwargs):
-        loader = DataLoader(DataSet.DESKTOP)
+        loader = DataLoader(DataSet.SEDENTARY)
         frame_length = hp.get('frame length')
         trainX, trainy, testX, testy = loader.load_1D(framelength=frame_length)
 
