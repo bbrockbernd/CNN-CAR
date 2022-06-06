@@ -17,11 +17,15 @@ class DataLoader:
     def __init__(self, ds: DataSet):
         self.dataPath: str = ['DesktopActivity', 'ReadingActivity', 'SedentaryActivity/data/subject'][ds.value]
 
-    def load_1D(self, validation = 0.1, framelength = 256):
+    def load_1D(self, validation = 0.1, framelength = 256, testsubjects=[]):
         subject_files = np.array(os.listdir(self.dataPath))
-        n_test_subjects = int(np.ceil(validation * len(subject_files)))
         test_mask = np.zeros_like(subject_files, dtype=bool)
-        test_mask[np.random.choice(len(subject_files), size=n_test_subjects, replace=False)] = True
+        if len(testsubjects) == 0:
+            n_test_subjects = int(np.ceil(validation * len(subject_files)))
+            test_mask[np.random.choice(len(subject_files), size=n_test_subjects, replace=False)] = True
+        else:
+            test_mask[testsubjects] = True
+        print(f'Datasplit: {test_mask}')
         train_mask = ~test_mask
 
         trainX, trainy = None, None
@@ -104,10 +108,6 @@ class DataLoader:
 
 
 
-# trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D()
-# trainX2D = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, 200)
-#
-# for i in range(20):
-#
-#     plt.imshow(trainX2D[np.random.randint(0, trainX2D.shape[0])])
-#     plt.show()
+# loader = DataLoader(DataSet.DESKTOP)
+# trainX, trainy, testX, testy = loader.load_1D(framelength=1024)
+# # print('merp')
