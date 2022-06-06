@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #
 #SBATCH --job-name="1d_training"
-#SBATCH --time=05:00:00
+#SBATCH --time=15:00:00
 #SBATCH --partition=gpu
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
