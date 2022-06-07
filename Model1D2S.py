@@ -10,7 +10,7 @@ import keras_tuner as kt
 class HyperModel1D(kt.HyperModel):
 
     def build(self, hp):
-        frame_length = hp.Int('frame length', 320, 1536, 64)
+        frame_length = hp.Int('frame length', 512, 4096, 64)
 
         n_filters_1 = hp.Int('filter count 1', 32, 256, 8)
         kernel_size_1 = hp.Int('kernel size 1', 3, 17, 2)
@@ -55,13 +55,13 @@ class HyperModel1D(kt.HyperModel):
                 model.add(layers.Dense(dense_size_2, activation='relu'))
                 model.add(layers.Dropout(drop_4))
 
-        model.add(layers.Dense(6, activation='softmax'))
+        model.add(layers.Dense(8, activation='softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         return model
 
     def fit(self, hp, model, *args, **kwargs):
-        loader = DataLoader(DataSet.READING)
+        loader = DataLoader(DataSet.SEDENTARY)
         frame_length = hp.get('frame length')
         trainX, trainy, testX, testy = loader.load_1D(framelength=frame_length, validation=0.2)
 
@@ -109,7 +109,7 @@ def tune_params():
                             objective="val_accuracy",
                             max_trials=300,
                             overwrite=False,
-                            directory="/scratch/bbrockbernd/tuning_1D_reading_fold",
+                            directory="/scratch/bbrockbernd/tuning_1D_sedentary_fold",
                             project_name="tune_hypermodel",
                             executions_per_trial=3)
 
