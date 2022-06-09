@@ -66,7 +66,7 @@ def create_moddel(strategy = None):
 
     model = keras.Sequential()
 
-    model.add(layers.Conv2D(16, (5, 5), input_shape=(500, 500, 1), activation='relu', padding='same'))
+    model.add(layers.Conv2D(16, (5, 5), input_shape=(128, 128, 1), activation='relu', padding='same'))
     # model.add(layers.BatchNormalization())
     # model.add(layers.ReLU())
     # model.add(layers.Dropout(0.2))
@@ -100,11 +100,11 @@ def create_moddel(strategy = None):
 
 def run_this_mofo():
     loader = DataLoader(DataSet.SEDENTARY)
-    trainX, trainy, testX, testy = loader.load_1D(per_frame_norm=True)
+    trainX, trainy, testX, testy = loader.load_1D(validation=0.2, framelength=512)
     # trainX, trainy, testX, testy = load_desktop_data_1D()
 
-    trainX = loader.transform_to_2d(trainX, 500)
-    testX = loader.transform_to_2d(testX, 500)
+    trainX = loader.transform_to_2d(trainX, 128)
+    testX = loader.transform_to_2d(testX, 128)
 
     start = time()
 
@@ -145,10 +145,10 @@ class HyperModel2D(kt.HyperModel):
         kernel_size_2 = hp.Int('kernel size convlayer 2', 3, 15, 2)
         kernel_size_3 = hp.Int('kernel size convlayer 3', 3, 15, 2)
 
-        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 0.6, 0.1)
-        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 0.6, 0.1)
-        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 0.6, 0.1)
-        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 0.6, 0.1)
+        drop_out_rate_1 = hp.Float('drop out rate 1', 0.0, 0.5, 0.1)
+        drop_out_rate_2 = hp.Float('drop out rate 2', 0.0, 0.5, 0.1)
+        drop_out_rate_3 = hp.Float('drop out rate 3', 0.0, 0.5, 0.1)
+        drop_out_rate_4 = hp.Float('drop out rate 4', 0.0, 0.5, 0.1)
 
         pool_size_1 = hp.Choice('pool size 1', [2, 4, 8])
         pool_size_2 = hp.Choice('pool size 2', [2, 4, 8])
@@ -183,21 +183,22 @@ class HyperModel2D(kt.HyperModel):
             # model.add(layers.BatchNormalization())
             # model.add(layers.ReLU())
             model.add(layers.Dropout(drop_out_rate_4))
-            model.add(layers.Dense(8, activation='softmax'))
+            model.add(layers.Dense(6, activation='softmax'))
 
 
             model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
         return model
 
     def fit(self, hp, model, *args, **kwargs):
-        framelength = hp.Int('frame length', 32, 512, 32, default=448)
+        framelength = hp.Int('frame length', 512, 4096, 64)
         resolution = hp.get('resolution')
         thickness = hp.Int('thickness', 1, 4, 1)
+        gradient = hp.Bool('Gradient')
 
 
-        trainX, trainy, testX, testy = DataLoader(DataSet.SEDENTARY).load_1D(framelength=framelength)
-        trainX = DataLoader(DataSet.SEDENTARY).transform_to_2d(trainX, resolution, thickness=thickness)
-        testX = DataLoader(DataSet.SEDENTARY).transform_to_2d(testX, resolution, thickness=thickness)
+        trainX, trainy, testX, testy = DataLoader(DataSet.READING).load_1D(framelength=framelength)
+        trainX = DataLoader(DataSet.READING).transform_to_2d(trainX, resolution, thickness=thickness, gradient=gradient)
+        testX = DataLoader(DataSet.READING).transform_to_2d(testX, resolution, thickness=thickness)
 
         verbose, epochs, batch_size = 0, 10, 32
 
