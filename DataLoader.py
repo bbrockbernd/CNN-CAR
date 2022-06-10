@@ -1,7 +1,7 @@
 import time
 from enum import Enum
 
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from scipy.io import loadmat
 import numpy as np
 import os
