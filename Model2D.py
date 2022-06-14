@@ -241,9 +241,9 @@ def optimize():
 
     tuner = CustomOptimizer(HyperModel2D(),
                             objective="val_accuracy",
-                            max_trials=300,
+                            max_trials=200,
                             overwrite=False,
-                            directory="tuning_bayes_outliers",
+                            directory="/scratch/bbrockbernd/tuning_reading_2d",
                             project_name="tune_hypermodel")
 
     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
