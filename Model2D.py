@@ -193,7 +193,7 @@ class HyperModel2D(kt.HyperModel):
         framelength = hp.Int('frame length', 512, 4096, 64)
         resolution = hp.get('resolution')
         thickness = hp.Int('thickness', 1, 4, 1)
-        gradient = hp.Bool('Gradient')
+        gradient = hp.Boolean('Gradient')
 
 
         trainX, trainy, testX, testy = DataLoader(DataSet.READING).load_1D(framelength=framelength)
