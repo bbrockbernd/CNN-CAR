@@ -244,7 +244,8 @@ def optimize():
                             max_trials=200,
                             overwrite=False,
                             directory="/scratch/bbrockbernd/tuning_reading_2d",
-                            project_name="tune_hypermodel")
+                            project_name="tune_hypermodel",
+                            executions_per_trial=3)
 
     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
                                              min_delta=1e-4,
