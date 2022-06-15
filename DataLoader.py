@@ -19,7 +19,22 @@ class DataLoader:
     def __init__(self, ds: DataSet):
         self.dataPath: str = ['DesktopActivity', 'ReadingActivity', 'SedentaryActivity/data/subject'][ds.value]
 
-    def load_1D(self, validation = 0.1, framelength = 256, testsubjects=[], allTrain=False):
+    def load_1D_framesplit(self, validation = 0.2, framelength = 256):
+        allX, ally, blaX, blay = self.load_1D(validation, framelength, [], True)
+        idxes = np.arange(len(allX))
+        np.random.shuffle(idxes)
+        allX = allX[idxes]
+        ally = ally[idxes]
+        foldSize = np.round(len(allX)*validation).astype(np.int32)
+        test_mask = np.zeros(len(allX), dtype=bool)
+        test_mask[0:foldSize] = True
+        trainX = allX[~test_mask]
+        trainy = ally[~test_mask]
+        testX = allX[test_mask]
+        testy = ally[test_mask]
+        return trainX, trainy, testX, testy
+
+    def load_1D(self, validation = 0.2, framelength = 256, testsubjects=[], allTrain=False):
         if self.dataPath == 'DesktopActivity':
             subject_files = np.array(['P1','P2','P3','P4','P5','P6','P7','P8'])
         else:
@@ -108,17 +123,6 @@ class DataLoader:
             y = np.concatenate((y, framesy))
 
         return x, y
-
-    # def load_desktop(self, folder, framelength):
-    #     activities = ['BROWSE', 'PLAY', 'READ', 'SEARCH', 'WATCH', 'WRITE']
-    #
-    #     x = np.zeros((0, framelength, 2))
-    #     y = np.zeros((0, len(activities)))
-    #
-    #     for i, activity in enumerate(activities):
-    #         activity_data = np.genfromtxt(f'DesktopActivityOld/{folder}/{folder}_{activity}.csv', delimiter=',')
-
-
 
     def points_to_gradient_image(self, data, resolution):
         data2d = np.zeros((data.shape[0], resolution, resolution), dtype=float)
