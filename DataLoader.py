@@ -19,10 +19,13 @@ class DataLoader:
     def __init__(self, ds: DataSet):
         self.dataPath: str = ['DesktopActivity', 'ReadingActivity', 'SedentaryActivity/data/subject'][ds.value]
 
-    def load_1D(self, validation = 0.1, framelength = 256, testsubjects=[]):
-        subject_files = np.array(os.listdir(self.dataPath))
+    def load_1D(self, validation = 0.1, framelength = 256, testsubjects=[], allTrain=False):
+        if self.dataPath == 'DesktopActivity':
+            subject_files = np.array(['P1','P2','P3','P4','P5','P6','P7','P8'])
+        else:
+            subject_files = np.array(os.listdir(self.dataPath))
         test_mask = np.zeros_like(subject_files, dtype=bool)
-        if len(testsubjects) == 0:
+        if len(testsubjects) == 0 and allTrain == False:
             n_test_subjects = int(np.ceil(validation * len(subject_files)))
             test_mask[np.random.choice(len(subject_files), size=n_test_subjects, replace=False)] = True
         else:
@@ -50,16 +53,20 @@ class DataLoader:
                 testX = np.concatenate((x, testX))
                 testy = np.concatenate((y, testy))
 
-        # min = np.min([np.min(trainX), np.min(testX)])
-        # trainX, testX = trainX - min, testX - min
-        #
-        # max = np.max([np.max(trainX), np.max(testX)])
-        # trainX, testX = trainX / max, testX / max
 
         return trainX, trainy, testX, testy
 
     def load_file(self, file_name, framelength):
-        dic = loadmat(file_name)
+        print(f'Loading {file_name}')
+        desktop_activities = ['BROWSE', 'PLAY', 'READ', 'SEARCH', 'WATCH', 'WRITE']
+        if self.dataPath == 'DesktopActivity':
+            dic = {}
+            folder = file_name.split('/')[1]
+            for activity in desktop_activities:
+                activity_data = np.genfromtxt(f'DesktopActivityOld/{folder}/{folder}_{activity}.csv', delimiter=',')
+                dic[activity] = activity_data
+        else:
+            dic = loadmat(file_name)
         keys = []
         for key in dic.keys():
             if key[0] != '_':
@@ -76,8 +83,14 @@ class DataLoader:
             activity_data = activity_data[np.abs(activity_data[:, 1] - np.mean(activity_data[:, 1])) < 2 * np.std(activity_data[:, 1])]
 
             # Sliding window
-            indices = np.tile(np.arange(framelength), (len(activity_data) - framelength, 1)) + np.arange(len(activity_data) - framelength)[:, np.newaxis]
-            framesX = activity_data[indices, 0:2]
+
+            try:
+                framesX = np.lib.stride_tricks.sliding_window_view(activity_data[:, 0:2], (framelength,), axis=0)
+                framesX = np.swapaxes(framesX, 1, 2)
+                framesX = framesX[::3]
+            except:
+                indices = np.tile(np.arange(framelength), (len(activity_data) - framelength, 1)) + np.arange(len(activity_data) - framelength)[:, np.newaxis]
+                framesX = activity_data[indices, 0:2]
 
             # Reduce data size
             framesX = framesX[::30]
@@ -95,6 +108,16 @@ class DataLoader:
             y = np.concatenate((y, framesy))
 
         return x, y
+
+    # def load_desktop(self, folder, framelength):
+    #     activities = ['BROWSE', 'PLAY', 'READ', 'SEARCH', 'WATCH', 'WRITE']
+    #
+    #     x = np.zeros((0, framelength, 2))
+    #     y = np.zeros((0, len(activities)))
+    #
+    #     for i, activity in enumerate(activities):
+    #         activity_data = np.genfromtxt(f'DesktopActivityOld/{folder}/{folder}_{activity}.csv', delimiter=',')
+
 
 
     def points_to_gradient_image(self, data, resolution):

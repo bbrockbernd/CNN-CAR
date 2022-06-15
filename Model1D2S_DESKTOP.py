@@ -10,10 +10,10 @@ import keras_tuner as kt
 class HyperModel1D(kt.HyperModel):
 
     def build(self, hp):
-        frame_length = hp.Int('frame length', 512, 4096, 64)
+        frame_length = hp.Int('frame length', 256, 4096, 64)
 
         n_filters_1 = hp.Int('filter count 1', 32, 256, 8)
-        kernel_size_1 = hp.Int('kernel size 1', 3, 17, 2)
+        kernel_size_1 = hp.Int('kernel size 1', 3, 25, 2)
         drop_1 = hp.Float('drop out 1', 0.0, 0.5, 0.1)
         pool_1 = hp.Choice('max pool 1', [2, 4, 8, 16])
 
@@ -55,13 +55,13 @@ class HyperModel1D(kt.HyperModel):
                 model.add(layers.Dense(dense_size_2, activation='relu'))
                 model.add(layers.Dropout(drop_4))
 
-        model.add(layers.Dense(8, activation='softmax'))
+        model.add(layers.Dense(6, activation='softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
         return model
 
     def fit(self, hp, model, *args, **kwargs):
-        loader = DataLoader(DataSet.SEDENTARY)
+        loader = DataLoader(DataSet.DESKTOP)
         frame_length = hp.get('frame length')
         trainX, trainy, testX, testy = loader.load_1D(framelength=frame_length, validation=0.2)
 
@@ -69,47 +69,12 @@ class HyperModel1D(kt.HyperModel):
 
 
 
-def evaluate_model(trainX, trainy, testX, testy):
-    verbose, epochs, batch_size = 1, 13, 64
-    n_timesteps, n_features, n_outputs = trainX.shape[1], trainX.shape[2], trainy.shape[1]
-    model = keras.Sequential()
-
-    model.add(layers.Conv1D(filters=128, kernel_size=3, activation='relu', input_shape=(n_timesteps,n_features), padding='same'))
-    model.add(layers.Dropout(0.0))
-    model.add(layers.MaxPooling1D(pool_size=2))
-
-    model.add(layers.Conv1D(filters=128, kernel_size=17, activation='relu', padding='same'))
-    model.add(layers.Dropout(0.0))
-    model.add(layers.MaxPooling1D(pool_size=16))
-
-    model.add(layers.Flatten())
-    model.add(layers.Dense(200, activation='relu'))
-    model.add(layers.Dropout(0.0))
-    model.add(layers.Dense(n_outputs, activation='softmax'))
-    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-    # fit network
-    model.fit(trainX, trainy, epochs=epochs, batch_size=batch_size, verbose=verbose, validation_data=(testX, testy))
-    # evaluate model
-    _, accuracy = model.evaluate(testX, testy, batch_size=batch_size, verbose=0)
-    return accuracy
-
 def tune_params():
-    # tuner = kt.Hyperband(HyperModel1D(),
-    #                      objective='val_accuracy',
-    #                      max_epochs=30,
-    #                      factor=3,
-    #                      directory='tuning1d',
-    #                      project_name='tune_hypermodel',
-    #                      hyperband_iterations=2,
-    #                      overwrite=True)
-    # tuner.search()
-
-
     tuner = CustomOptimizer(HyperModel1D(),
                             objective="val_accuracy",
                             max_trials=300,
                             overwrite=False,
-                            directory="/scratch/bbrockbernd/tuning_1D_sedentary_fold",
+                            directory="/scratch/bbrockbernd/tuning_1D_desktop_github",
                             project_name="tune_hypermodel",
                             executions_per_trial=3)
 
@@ -120,9 +85,5 @@ def tune_params():
 
     tuner.search(epochs=30, callbacks=[callback])
 
-
-# loader = DataLoader(DataSet.READING)
-# trainX, trainy, testX, testy = loader.load_1D(framelength=512)
-# evaluate_model(trainX, trainy, testX, testy)
 
 tune_params()
