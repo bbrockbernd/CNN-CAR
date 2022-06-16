@@ -1,0 +1,16 @@
+hp,start,stop,step,reading,desktop,sedentary
+Frame length,512,4096,64,3256,512,200
+Conv 1: filter count,32,256,8,32,256,200
+Conv 1: kernel size,3,25,2,17,3,200
+Conv 1: drop out,0.0,0.5,0.1,0.3,0.3,200
+Conv 1: max pool,2,16,Exp,2,2,200
+Enable Conv 2,-,-,-,True,True,False
+Conv 2: filter count,32,256,8,48,216,200
+Conv 2: kernel size,3,25,2,19,25,200
+Conv 2: drop out,0.0,0.5,0.1,0.5,0.5,200
+Conv 2: max pool,2,64,Exp,64,8,200
+Dense 1: size,60,340,20,320,340,200
+Dense 1: drop out,0.0,0.5,0.1,0.5,0.3,200
+Enable Dense 2,-,-,-,True,False,False
+Dense 2: size,60,200,20,80,-,200
+Dense 2: drop out,0.0,0.5,0.1,0.2,-,200
