@@ -1,6 +1,6 @@
 #!/bin/bash -l
 #
-#SBATCH --job-name="1d_training"
+#SBATCH --job-name="1d_desktop_frame"
 #SBATCH --time=15:00:00
 #SBATCH --partition=gpu
 #SBATCH --ntasks=1

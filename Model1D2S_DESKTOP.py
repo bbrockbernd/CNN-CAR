@@ -63,7 +63,7 @@ class HyperModel1D(kt.HyperModel):
     def fit(self, hp, model, *args, **kwargs):
         loader = DataLoader(DataSet.DESKTOP)
         frame_length = hp.get('frame length')
-        trainX, trainy, testX, testy = loader.load_1D(framelength=frame_length, validation=0.2)
+        trainX, trainy, testX, testy = loader.load_1D_framesplit(framelength=frame_length, validation=0.2)
 
         return model.fit(trainX, trainy, *args, batch_size=256, validation_data=(testX, testy), **kwargs)
 
@@ -74,7 +74,7 @@ def tune_params():
                             objective="val_accuracy",
                             max_trials=300,
                             overwrite=False,
-                            directory="/scratch/bbrockbernd/tuning_1D_desktop_github",
+                            directory="/scratch/bbrockbernd/tuning_1D_desktop_frame",
                             project_name="tune_hypermodel",
                             executions_per_trial=3)
 
